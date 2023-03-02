@@ -33,7 +33,7 @@ async def respond_generated_image(app, target: Union[Friend, Group], source: Sou
                                   quote=source if config.response.quote else False)
     
 
-def check_prefix(self, content, prefix_list):
+def check_prefix(content, prefix_list):
     for prefix in prefix_list:
         if content.startswith(prefix):
             return prefix
