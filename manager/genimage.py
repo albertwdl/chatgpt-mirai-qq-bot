@@ -12,7 +12,7 @@ async def get_generated_image(prompt: str, prefix: str):
     url = 'http://kwdl.xyz'
     port = 6003
     async with httpx.AsyncClient() as client:
-        r = await client.post(f'{url}:{port}/', json={'prompt': prompt[len(prefix):], 'width': 512, 'height': 512, 'num_images_per_prompt': 1})
+        r = await client.post(f'{url}:{port}/', json={'prompt': prompt[len(prefix):].strip(), 'width': 512, 'height': 512, 'num_images_per_prompt': 1})
         job_id = r.json()['job_id']
         while True:
             await asyncio.sleep(10)
