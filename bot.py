@@ -33,6 +33,8 @@ import time
 from revChatGPT.V1 import Error as V1Error
 import datetime
 
+from manager.genimage import check_prefix, get_generated_image, respond_generated_image
+
 config = Config.load_config()
 # Refer to https://graia.readthedocs.io/ariadne/quickstart/
 app = Ariadne(
@@ -167,8 +169,13 @@ async def friend_message_listener(app: Ariadne, friend: Friend, source: Source,
     if chain.display.startswith("."):
         return
     rate_usage = rateLimitManager.check_exceed('好友', friend.id)
+    prefix = check_prefix(chain.display,config.trigger.generate_image_command)
     if rate_usage >= 1:
         response = config.ratelimit.exceed
+    elif prefix:
+        response = await get_generated_image(chain.display, prefix)
+        await respond_generated_image(app, friend, source, config, response)
+        return
     else:
         response = await handle_message(friend, f"friend-{friend.id}", chain.display, source)
         if rate_usage >= config.ratelimit.warning_rate:
@@ -190,8 +197,13 @@ async def group_message_listener(group: Group, source: Source, chain: GroupTrigg
     if chain.display.startswith("."):
         return
     rate_usage = rateLimitManager.check_exceed('群组', group.id)
+    prefix = check_prefix(chain.display,config.trigger.generate_image_command)
     if rate_usage >= 1:
         return config.ratelimit.exceed
+    elif prefix:
+        response = await get_generated_image(chain.display, prefix)
+        await respond_generated_image(app, group, source, config, response)
+        return
     else:
         response = await handle_message(group, f"group-{group.id}", chain.display, source)
         if rate_usage >= config.ratelimit.warning_rate:

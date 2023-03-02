@@ -100,6 +100,8 @@ class Trigger(BaseModel):
     """重置会话的命令"""
     rollback_command: List[str] = ["回滚会话"]
     """回滚会话的命令"""
+    generate_image_command: List[str] = ["画一张图"]
+    """画图的命令"""
 
 
 class Response(BaseModel):
